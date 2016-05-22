@@ -8,7 +8,7 @@ Reactor = {
   rxr = {},
   ecurrent = 0,
   eprevious = 0,
-  edifferene= 0,
+  edifference= 0,
   ebuffer = {},
   maxdelta = 500,
   mindelta = -500,
@@ -29,42 +29,40 @@ end
 
 function Reactor:init()
   self.mwidth, self.mheight = self.mon:getSize()
-  self.ebuffer = CBuffer:new{size = 29}
+  self.ebuffer = CBuffer:new{size = 55}
+  self.ecurrent = self.rxr:getEnergyStored()
+  self.eprevious = self.ecurrent
 end
 
 function Reactor:draw()
   self:updateAmounts()
 
-  leftWidth = 24
+  --  Title
+  self.mon:setCursorPos(8,1)
+  self.mon:write("[REACTOR]")
 
   -- General Box
-  self.gfx:box(1,1,leftWidth,1,"General")
-  local stat = "Offline"
-  if self.rxr:getActive() then
-    stat = "ONLINE"
-  end
-  self.gfx:label(2,2,"Status", stat, leftWidth)
+  self.gfx:box(1,3,20,2,"General")
+  local stat = (self.rxr:getActive() and "ONLINE") or "Offline"
+  self.gfx:label(2,4,"Status", stat, 20)
+  self.gfx:label(2,5,"Casing", self.rxr:getCasingTemperature(), 20)
 
   -- Fuel and Waste Box
-  self.gfx:box(1,6,leftWidth,5,"Fuel and Waste")
-  self.gfx:label(2,7,"Temp:", self.rxr:getFuelTemperature(),leftWidth)
-  self.gfx:labeledHBar(2,8,"Fuel Amount:", self.rxr:getFuelAmount(), self.rxr:getFuelAmountMax(), leftWidth)
-  self.gfx:label(2,10,"Waste Amount:", self.rxr:getWasteAmount(), leftWidth)
+  self.gfx:box(23,1,33,4,"Fuel and Waste")
+  self.gfx:label(24,2,"Temp", self.rxr:getFuelTemperature(),33)
+  self.gfx:labeledHBar(24,3,"Fuel Amount", self.rxr:getFuelAmount(), self.rxr:getFuelAmountMax(), 33)
+  self.gfx:label(24,5,"Waste Amount", self.rxr:getWasteAmount(), 33)
 
   -- Energy Box
-  leftMargin = leftWidth + 3
-  centerWidth = self.mwidth - leftWidth - 4
-  title = "Energy ("..(self.mon:repr(self:getEnergyPercentage())).."%)"
-
-  self.gfx:box(leftMargin,1,centerWidth,16,title)
-  self.gfx:labeledHBar(leftMargin+1,2,"In Buffer:", self.ecurrent, 10000000, centerWidth)
-
-  self.gfx:label(leftMargin+1, 4, "Delta: ", self.edifference, centerWidth)
+  local title = "Energy ("..(self.mon:repr(self:getEnergyPercentage())).."%)"
+  self.gfx:box(1,7,55,self.mheight-8,title)
+  self.gfx:labeledHBar(2,8,"Amount Stored", self.ecurrent, 10000000, 55)
 
   self.ebuffer:add(self.edifference)
-  self.gfx:timeline(leftMargin+1, 5, self.ebuffer, self.maxdelta, self.mindelta, 11)
-  self.gfx:label(leftMargin+1, 17, "Max: ", self.maxdelta, 13)
-  self.gfx:label(leftMargin+16, 17, "Min: ", self.mindelta, 14)
+  self.gfx:timeline(2, 10, self.ebuffer, self.maxdelta, self.mindelta, 11)
+  self.gfx:label(2, 21, "Delta", self.edifference, 55)
+  self.gfx:label(2, 22, "Max Delta", self.maxdelta, 55)
+  self.gfx:label(2, 23, "Min Delta", self.mindelta, 55)
 
   -- Update Reactor Status
   self:updateStatus()
@@ -77,11 +75,11 @@ function Reactor:updateAmounts()
   self.edifference = self.ecurrent - self.eprevious
 
   if self.edifference > self.maxdelta then
-    self.maxdelta = self.edifference
+    self.maxdelta = math.max(self.edifference, 500)
   end
 
   if self.edifference < self.mindelta then
-    self.mindelta = self.edifference
+    self.mindelta = math.min(self.edifference, -500)
   end
 end
 

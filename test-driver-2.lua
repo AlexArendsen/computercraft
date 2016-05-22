@@ -7,10 +7,11 @@ dofile("reactor.lua")
 dofile("cbuffer.lua")
 
 
-mon = MonitorWrapper:new{w = 3, h = 2}
+mon = MonitorWrapper:new{selector = "top"}
 wrxr = ReactorWrapper:new{selector = "BigReactors-Reactor_2"}
 gfx = TextGraphics:new{mon = mon}
 rxr = Reactor:new{mon = mon, gfx = gfx, rxr = wrxr}
+mon:setTextScale(0.5)
 
 while 1 do
   mon:clear()
