@@ -66,6 +66,8 @@ function Reactor:draw()
   self.gfx:label(leftMargin+1, 17, "Max: ", self.maxdelta, 13)
   self.gfx:label(leftMargin+16, 17, "Min: ", self.mindelta, 14)
 
+  -- Update Reactor Status
+  self:updateStatus()
 
 end
 

@@ -7,6 +7,7 @@ MonitorWrapper = {
 function MonitorWrapper:new(o)
   o = o or {}
   setmetatable(o, self)
+  self.__index = self
   o.mon = peripheral.wrap(o.selector)
   return o
 end
@@ -90,7 +91,7 @@ function MonitorWrapper:draw()
 end
 
 -- Get string prepresentation of some input
-function DummyMonitor:repr(value)
+function MonitorWrapper:repr(value)
   t = type(value)
   if t == "string" then
     return value
