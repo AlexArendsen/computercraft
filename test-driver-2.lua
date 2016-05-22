@@ -1,10 +1,10 @@
 -- An example driver script
 
-dofile("text-graphics")
-dofile("dummy-monitor")  -- Replace with monitor-wrapper for in-game use
-dofile("dummy-reactor")  -- Replace with reactor-wraper for in-game use
-dofile("reactor")
-dofile("cbuffer")
+dofile("text-graphics.lua")
+dofile("dummy-monitor.lua")  -- Replace with monitor-wrapper for in-game use
+dofile("dummy-reactor.lua")  -- Replace with reactor-wraper for in-game use
+dofile("reactor.lua")
+dofile("cbuffer.lua")
 
 
 mon = MonitorWrapper:new{w = 3, h = 2}
